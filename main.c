@@ -1,5 +1,7 @@
 #include "BinarySearchTree.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include "RedBlackTree.h"
 
 int main(void)
 {

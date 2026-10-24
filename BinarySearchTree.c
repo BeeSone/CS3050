@@ -1,8 +1,9 @@
 #include "BinarySearchTree.h"
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 
+//TODO: Fisher-Yates loop, range counter, pass the range counter to rb_run_correctness_tests,
 Node *create_node(int key){
     Node* n = malloc(sizeof(Node));
     // this is like throw in java. If malloc fails, throw an error.
@@ -26,7 +27,6 @@ Node* insertNode(Node *node, Node *root){
         return node;
     }
     root->count++;
-
 
     // Case 1: node data is less than root (current node)
     // Here we recursively call insertNode going left
@@ -64,4 +64,43 @@ void printBST(Node *root){
     printBST(root->left);
     printf("key: %d, max_key: %d\n", root->key, root->max_key);
     printBST(root->right);
+}
+
+void freeBST(Node *root){
+    if (root == NULL){
+        return;
+    }
+    if (root->count == 0){
+        free(root);
+        return;
+    }
+    // if (root->left==NULL){
+    //     printf("%d, ", (root->key));
+    // }
+
+    // Recursive magical journey
+    freeBST(root->left);
+    freeBST(root->right);
+    free(root);
+}
+
+size_t countRange(Node *root, int low, int high){
+    if (low > high){
+        return 0;
+    }
+    if (root == NULL){
+        return 0;
+    }
+    if (root->min_key >= low && root->max_key <= high){
+        return root->count;
+    }
+    if (root->max_key < low || root->min_key > high){
+        return 0;
+    }
+    if (root->key >= low && root->key <= high){
+        return 1 + countRange(root->left, low, high) + countRange(root->right, low, high);
+    }
+    // If the current node's key is not included in the range, we check its children. 
+    // This recursive call will quickly prune branches because of the min_key and max_key checks above.
+    return countRange(root->left, low, high) + countRange(root->right, low, high);
 }
